@@ -23,3 +23,26 @@ app.use('/api/lot', require('./routes/lots.routes'))
 
 //Run server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}...`))
+
+const startKeepAlive = () => {
+    setInterval(() => {
+        let options = {
+            host: 'weather-stats.herokuapp.com',
+            port: 80,
+            path: '/'
+        };
+        http.get(options, res => {
+            res.on('data', chunk => {
+                try {
+                    console.log("HEROKU RESPONSE: " + chunk);
+                } catch (err) {
+                    console.log(err.message);
+                }
+            });
+        }).on('error', err => {
+            console.log("Error: " + err.message);
+        });
+    }, 20 * 60 * 1000); // load every 20 minutes
+}
+
+startKeepAlive();
